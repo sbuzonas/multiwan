@@ -45,7 +45,7 @@ function link_status() {
 
 # check_link $IP $TIMEOUT
 function check_link() {
-  ping -W $2 -I $1 -c 1 $PINGURL > /dev/null 2>&1
+  ping -W $2 -I $1 -c 1 $PING_TARGET > /dev/null 2>&1
   RETVAL=$?
   if [ $RETVAL -ne 0 ] ; then
     STATE=1
@@ -59,11 +59,11 @@ function check_link() {
 }
 
 while : ; do
-  LINK_STATE="$(check_link $WAN_IP1 $TIMEOUT)"
+  LINK_STATE="$(check_link $WAN_IP1 $PING_TIMEOUT)"
   CPS1=$?
 
   if [ $LPS1 -ne $CPS1 ] ; then
-    logger -p local6.notice -t MULTIWAN[$$] "Ping state changed for $TABLE1 from $(link_status $LPS1) to $(link_status $CPS1)"
+    logger -p local6.notice -t MULTIWAN[$$] "Ping state changed for $WAN_TABLE1 from $(link_status $LPS1) to $(link_status $CPS1)"
     COUNT1=1
   else
     if [ $LPS1 -ne $LLS1 ] ; then
@@ -72,7 +72,6 @@ while : ; do
   fi
 
   if [[ $COUNT1 -ge $SUCCESS_COUNT || ($LLS1 -eq 0 && $COUNT1 -ge $FAILURE_COUNT) ]]; then
-    logger -p local6.notice -t MULTIWAN[$$] "Link state for $TABLE1 is $(link_status $LLS1)"
     CLS1=0
     COUNT1=0
 
@@ -81,17 +80,18 @@ while : ; do
     else
       LLS1=1
     fi
+    logger -p local6.notice -t MULTIWAN[$$] "Link state for $WAN_TABLE1 is $(link_status $LLS1)"
   else
     CLS1=1
   fi
 
   LPS1=$CPS1
 
-  LINK_STATE="$(check_link $WAN_IP2 $TIMEOUT)"
+  LINK_STATE="$(check_link $WAN_IP2 $PING_TIMEOUT)"
   CPS2=$?
 
   if [ $LPS2 -ne $CPS2 ] ; then
-    logger -p local6.notice -t MULTIWAN[$$] "Ping state changed for $TABLE2 from $(link_status $LPS2) to $(link_status $CPS2)"
+    logger -p local6.notice -t MULTIWAN[$$] "Ping state changed for $WAN_TABLE2 from $(link_status $LPS2) to $(link_status $CPS2)"
     COUNT2=1
   else
     if [ $LPS2 -ne $LLS2 ] ; then
@@ -100,7 +100,6 @@ while : ; do
   fi
 
   if [[ $COUNT2 -ge $SUCCESS_COUNT || ($LLS2 -eq 0 && $COUNT2 -ge $FAILURE_COUNT) ]]; then
-    logger -p local6.notice -t MULTIWAN[$$] "Link state for $TABLE2 is $(link_status $LLS2)"
     CLS2=0
     COUNT2=0
 
@@ -109,6 +108,7 @@ while : ; do
     else
       LLS2=1
     fi
+    logger -p local6.notice -t MULTIWAN[$$] "Link state for $WAN_TABLE2 is $(link_status $LLS2)"
   else
     CLS2=1
   fi
@@ -121,14 +121,14 @@ while : ; do
       CHECK_INTERVAL=15
     fi
     if [[ $LLS1 -eq 1 && $LLS2 -eq 0 ]] ; then
-      logger -p local6.notice -t MULTIWAN[$$] "Switching to $TABLE2 only route."
+      logger -p local6.notice -t MULTIWAN[$$] "Applying $WAN_TABLE2 only route."
       ip route change default scope global via $WAN_GW2 dev $WAN_IF2
     elif [[ $LLS1 -eq 0 && $LLS2 -eq 1 ]] ; then
-      logger -p local6.notice -t MULTIWAN[$$] "Switching to $TABLE1 only route."
+      logger -p local6.notice -t MULTIWAN[$$] "Applying $WAN_TABLE1 only route."
       ip route change default scope global via $WAN_GW1 dev $WAN_IF1
     elif [[ $LLS1 -eq 0 && $LLS2 -eq 0 ]] ; then
-      logger -p local6.notice -t MULTIWAN[$$] "Switching to multiwan load balancing route."
-      ip route replace default scope global nexthop via $WAN_GW1 dev $WAN_IF1 weight $WEIGHT1 nexthop via $WAN_GW2 dev $WAN_IF2 weight $WEIGHT2
+      logger -p local6.notice -t MULTIWAN[$$] "Applying multiwan load balancing route."
+      ip route replace default scope global nexthop via $WAN_GW1 dev $WAN_IF1 weight $WAN_WEIGHT1 nexthop via $WAN_GW2 dev $WAN_IF2 weight $WAN_WEIGHT2
     fi
   fi
 
