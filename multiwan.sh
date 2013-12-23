@@ -128,7 +128,7 @@ while : ; do
       ip route change default scope global via $WAN_GW1 dev $WAN_IF1
     elif [[ $LLS1 -eq 0 && $LLS2 -eq 0 ]] ; then
       logger -p local6.notice -t MULTIWAN[$$] "Switching to multiwan load balancing route."
-      ip route change default scope global via $WAN_GW1 dev $WAN_IF1 weight $WEIGHT1 nexthop via $WAN_GW2 dev $WAN_IF2 weight $WEIGHT2
+      ip route replace default scope global nexthop via $WAN_GW1 dev $WAN_IF1 weight $WEIGHT1 nexthop via $WAN_GW2 dev $WAN_IF2 weight $WEIGHT2
     fi
   fi
 
