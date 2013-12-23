@@ -9,7 +9,7 @@ Vcs-Git: git://github.com/slbmeh/deb-multiwan.git
 Vcs-Browser: http://github.org/slbmeh/deb-multiwan
 
 Package: multiwan
-Architecture: any
+Architecture: all
 Depends: bash (>=2.05a-11), iputils-ping, iproute, lsb-base (>= 3.0-6), ${misc:Depends}
 Description: script provides link status checking and failover route switching
  depending on current link state.
