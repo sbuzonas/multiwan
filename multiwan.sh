@@ -2,11 +2,12 @@
 
 source /etc/multiwan.conf
 
-CHECK_INTERVAL=10
+STARTUP=1
+CHECK_INTERVAL=1
 
 # IP address of each WAN interface
-WAN_NET1="$(ip addr show $WAN1 | grep "inet " | tr -s [:space:] | cut -d ' ' -f3)"
-WAN_NET2="$(ip addr show $WAN2 | grep "inet " | tr -s [:space:] | cut -d ' ' -f3)"
+WAN_NET1="$(ip addr show $WAN_IF1 | grep "inet " | tr -s [:space:] | cut -d ' ' -f3)"
+WAN_NET2="$(ip addr show $WAN_IF2 | grep "inet " | tr -s [:space:] | cut -d ' ' -f3)"
 
 WAN_IP1="$(echo $WAN_NET1 | cut -d '/' -f1)"
 WAN_IP2="$(echo $WAN_NET2 | cut -d '/' -f1)"
@@ -115,15 +116,19 @@ while : ; do
   LPS2=$CPS2
 
   if [[ $CLS1 -eq 0 || $CLS2 -eq 0 ]] ; then
+    if [[ $STARTUP -eq 1 ]] ; then
+      STARTUP=0
+      CHECK_INTERVAL=15
+    fi
     if [[ $LLS1 -eq 1 && $LLS2 -eq 0 ]] ; then
       logger -p local6.notice -t MULTIWAN[$$] "Switching to $TABLE2 only route."
-      ip route change default scope global via $WAN_GW2 dev $WAN2
+      ip route change default scope global via $WAN_GW2 dev $WAN_IF2
     elif [[ $LLS1 -eq 0 && $LLS2 -eq 1 ]] ; then
       logger -p local6.notice -t MULTIWAN[$$] "Switching to $TABLE1 only route."
-      ip route change default scope global via $WAN_GW1 dev $WAN1
+      ip route change default scope global via $WAN_GW1 dev $WAN_IF1
     elif [[ $LLS1 -eq 0 && $LLS2 -eq 0 ]] ; then
       logger -p local6.notice -t MULTIWAN[$$] "Switching to multiwan load balancing route."
-      ip route change default scope global via $WAN_GW1 dev $WAN1 weight $WEIGHT1 nexthop via $WAN_GW2 dev $WAN2 weight $WEIGHT2
+      ip route change default scope global via $WAN_GW1 dev $WAN_IF1 weight $WEIGHT1 nexthop via $WAN_GW2 dev $WAN_IF2 weight $WEIGHT2
     fi
   fi
 
