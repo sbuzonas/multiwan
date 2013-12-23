@@ -1,6 +1,8 @@
 #!/usr/bin/env bash
 
-source /etc/default/multiwan
+source /etc/multiwan.conf
+
+CHECK_INTERVAL=10
 
 # IP address of each WAN interface
 WAN_NET1="$(ip addr show $WAN1 | grep "inet " | tr -s [:space:] | cut -d ' ' -f3)"
