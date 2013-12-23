@@ -1,0 +1,63 @@
+.\" The MIT License (MIT)
+.\" Copyright © 2013 Steve Buzonas <steve@fancyguy.com>
+.\"
+.\" Permission is hereby granted, free of charge, to any person obtaining a copy
+.\" of this software and associated documentation files (the “Software”), to deal
+.\" in the Software without restriction, including without limitation the rights
+.\" to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+.\" copies of the Software, and to permit persons to whom the Software is
+.\" furnished to do so, subject to the following conditions:
+.\"
+.\" The above copyright notice and this permission notice shall be included in
+.\" all copies or substantial portions of the Software.
+.\"
+.\" THE SOFTWARE IS PROVIDED “AS IS”, WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+.\" IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+.\" FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+.\" AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+.\" LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+.\" OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
+.\" THE SOFTWARE.
+.TH MULTIWAN 5 2013-12-21 "FancyGuy Technologies" "Linux Programmer's Manual"
+.SH NAME
+multiwan \- the multi wan connection failover tool
+.SH "SYNOPSIS"
+.B /etc/multiwan.conf
+.SH "DESCRIPTION"
+.LP
+This file is required in order for the script to function properly.
+.LP
+The different configuration options are:
+.TP
+\fBPING_TARGET\fP
+IP address or domain name to ping.  The script relies on a service
+to always be available.
+.TP
+\fBPING_TIMEOUT\fP
+Ping timeout in seconds
+.TP
+\fBSUCCESS_COUNT\fP
+Number of consecutive successful ping attempts before considering the link to be \fIup\fP.
+.TP
+\fBFAILURE_COUNT\fP
+Number of consecutive failed ping attempts before considering the link to be \fIdown\fP.
+.TP
+\fBWAN_IF1\fP
+The interface name for the first external network connection.
+.TP
+\fBWAN_IF2\fP
+The interface name for the second external network connection.
+.TP
+\fBWAN_GW1\fP
+The gateway address to route traffic through the interface specified in \fIWAN_IF1\fP.
+.TP
+\fBWAN_GW2\fP
+The gateway address to route traffic through the interface specified in \fIWAN_IF2\fP.
+.TP
+\fBWAN_WEIGHT1\fP
+The route weight for the interface specified in \fIWAN_IF1\fP.
+.TP
+\fBWAN_WEIGHT2\fP
+The route weight for the interface specified in \fIWAN_IF2\fP.
+.SH "SEE ALSO"
+multiwan(8), ip(8)
